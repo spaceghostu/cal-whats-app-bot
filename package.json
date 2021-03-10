@@ -8,7 +8,8 @@
     "scripts": {
         "clean": "rm -Rf node_modules/ *.js",
         "build": "tsc",
-        "test": "npm run build && node dist/client.js"
+        "test": "npm run build && node dist/client.js",
+        "watch": "nodemon --watch 'main.ts' --exec 'ts-node' main.ts"
     },
     "author": "OpenAPI-Generator Contributors",
     "license": "Unlicense",
@@ -18,14 +19,19 @@
         "axios": "^0.21.1",
         "bluebird": "^3.5.0",
         "body-parser": "^1.19.0",
+        "chalk": "^4.1.0",
+        "cli-highlight": "^2.1.10",
         "express": "^4.17.1",
         "g-i-s": "^2.1.6",
         "http": "0.0.1-security",
+        "json-colorizer": "^2.2.2",
         "localtunnel": "^2.0.1",
+        "lodash": "^4.17.21",
         "moment": "^2.29.1",
         "ngrok": "^3.4.0",
         "node-fetch": "^2.6.1",
         "node-http": "0.0.5",
+        "nodemon": "^2.0.7",
         "path": "^0.12.7",
         "random-image-unsplash": "^1.0.6",
         "random-img": "^1.0.0",
@@ -36,6 +42,6 @@
     },
     "devDependencies": {
         "@types/node": "^8.10.34",
-        "typescript": "^2.4.2"
+        "typescript": "^2.9.2"
     }
 }

@@ -59,34 +59,29 @@ app.post('/', function (req, res) {
       .page(about)
       .then(page => page.summary())
       .then(summary => {
-        axios.post(`${apiUrl}/typing?token=${token}`, {
-          chatId: data.chatId,
-          on: true,
-          duration: 10
-        });
         axios.post(`${apiUrl}/sendMessage?token=${token}`, {
           body: summary,
           chatId: data.chatId
-        }).then(res => {
-          console.log(res);
         });
       });
   }
 
 
   if (data && data.body && data.body.match(/^Picture of /g)) {
+    axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+      body: 'Hang tight...',
+      chatId: data.chatId
+    });
+
     const about = data.body.replace(/^Picture of /g, '');
     console.log(about);
 
     gis(about, (err, res) => {
       console.log(res[0]);
-
-      // downloadImage(res[0].url).then(res => {
-      // console.log('Image downloaded:');
       const _body = res[Math.floor(Math.random() * 100)].url;
-      console.log('-------------------Req body: ', _body);
+      console.log('Req body: ', _body);
       const newUrl = _body.match(/^(.+?\.(png|jpe?g))/i)[0];
-      console.log('--------newUrl', newUrl)
+      console.log('newUrl', newUrl)
       axios.post(`${apiUrl}/sendFile?token=${token}`, {
         filename: newUrl,
         body: newUrl,
@@ -96,58 +91,13 @@ app.post('/', function (req, res) {
         headers: {
           'Content-type': 'application/json'
         }
-      }).then(res => {
-        console.log(res);
       });
-      // })   
 
 
     });
   }
-
-  // res.send("It's working");
   res.end();
 });
-
-async function apiChatApi(method, params) {
-  const options = {};
-  options['method'] = "POST";
-  options['body'] = JSON.stringify(params);
-  options['headers'] = { 'Content-Type': 'application/json' };
-
-  const url = `${apiUrl}/${method}?token=${token}`;
-
-  const apiResponse = await fetch(url, options);
-  const jsonResponse = await apiResponse.json();
-  return jsonResponse;
-}
-
-
-
-app.post('/webhook', async function (req, res) {
-  const data = req.body;
-  for (var i in data.messages) {
-    const author = data.messages[i].author;
-    const body = data.messages[i].body;
-    const chatId = data.messages[i].chatId;
-    const senderName = data.messages[i].senderName;
-
-    console.log(data);
-
-    if (data.messages[i].fromMe) return;
-  }
-});
-
-
-// axios.post(url + '/sendMessage?token=1zr7u3x08vfu82x6', {
-//   body: "Just testing my whatsapp bot",
-//   phone: "27662504106"
-// }).then(res => {
-//   console.log(res)
-// })
-
-
-
 
 async function downloadImage(url) {
   console.log('Getting image');
