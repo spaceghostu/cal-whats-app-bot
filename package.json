@@ -7,7 +7,8 @@
     "types": "dist/api.d.ts",
     "scripts": {
         "clean": "rm -Rf node_modules/ *.js",
-        "build": "tsc",
+        "build": "npx tsc",
+        "start": "node dist/main.js",
         "test": "npm run build && node dist/client.js",
         "watch": "nodemon --watch 'main.ts' --exec 'ts-node' main.ts"
     },
