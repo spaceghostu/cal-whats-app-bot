@@ -7,6 +7,9 @@ import bodyParser from 'body-parser';
 import wiki from 'wikijs';
 import localtunnel from 'localtunnel';
 import moment from 'moment';
+import gis from 'g-i-s';
+import path from 'path';
+import fs from 'fs';
 
 const app = express();
 app.use(bodyParser.json());
@@ -19,25 +22,12 @@ process.on('unhandledRejection', err => {
   console.log(err);
 });
 
-axios({
-  method: 'post',
-  url: `${apiUrl}/sendMessage?token=${token}`,
-  data: {
-    body: 'Init:' + ' - ' + moment().format('MMMM Do YYYY, h:mm:ss a'),
-    phone: '27662504106'
-  }
-});
-
 
 let tunnel = '';
 (async () => {
   const _tunnel = await localtunnel({ port: 3000 });
 
-  // the assigned public url for your tunnel
-  // i.e. https://abcdefgjhij.localtunnel.me
-  console.log(_tunnel.url);
   tunnel = _tunnel.url;
-
 
   axios({
     method: 'post',
@@ -46,7 +36,7 @@ let tunnel = '';
       webhookUrl: tunnel,
     }
   }).then(res => {
-    app.listen(3000, () => console.log("Server listening on port 3000!"));
+    app.listen(3000, () => console.log(`Server listening on localhost:3000 tunneled to ${_tunnel.url}!`));
   });
 
   _tunnel.on('close', () => {
@@ -56,12 +46,13 @@ let tunnel = '';
 
 
 app.post('/', function (req, res) {
+  console.log(req.body);
   const data = req.body.messages[0];
   console.log(data);
 
 
 
-  if (data.body.match(/^Tell me about /g)) {
+  if (data && data.body && data.body.match(/^Tell me about /g)) {
     const about = data.body.replace(/^Tell me about /g, '');
     console.log(about);
     wiki()
@@ -83,9 +74,35 @@ app.post('/', function (req, res) {
   }
 
 
-  if (data.body.match(/^Picture of /g)) {
+  if (data && data.body && data.body.match(/^Picture of /g)) {
     const about = data.body.replace(/^Picture of /g, '');
     console.log(about);
+
+    gis(about, (err, res) => {
+      console.log(res[0]);
+
+      // downloadImage(res[0].url).then(res => {
+      // console.log('Image downloaded:');
+      const _body = res[Math.floor(Math.random() * 100)].url;
+      console.log('-------------------Req body: ', _body);
+      const newUrl = _body.match(/^(.+?\.(png|jpe?g))/i)[0];
+      console.log('--------newUrl', newUrl)
+      axios.post(`${apiUrl}/sendFile?token=${token}`, {
+        filename: newUrl,
+        body: newUrl,
+        message: about,
+        chatId: data.chatId
+      }, {
+        headers: {
+          'Content-type': 'application/json'
+        }
+      }).then(res => {
+        console.log(res);
+      });
+      // })   
+
+
+    });
   }
 
   // res.send("It's working");
@@ -131,3 +148,23 @@ app.post('/webhook', async function (req, res) {
 
 
 
+
+async function downloadImage(url) {
+  console.log('Getting image');
+  const newUrl = url.match(/^(.+?\.(png|jpe?g))/i);
+  console.log('--------newUrl', newUrl)
+  const _url = newUrl;
+  const _path = path.resolve(__dirname, 'images', 'code.jpg');
+  const _writer = fs.createWriteStream(_path);
+
+  const response = await axios.get(_url, {
+    responseType: 'stream'
+  });
+
+  response.data.pipe(_writer);
+
+  return new Promise((resolve, reject) => {
+    _writer.on('finish', resolve);
+    _writer.on('error', reject);
+  });
+}
