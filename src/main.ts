@@ -1,6 +1,3 @@
-// This is the entrypoint for the package
-export * from './api/apis';
-export * from './model/models';
 import axios from 'axios';
 import express from 'express';
 import bodyParser from 'body-parser';

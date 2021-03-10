@@ -1,15 +1,25 @@
 {
-    "compilerOptions": {
-      "target": "es5",                          
-      "module": "commonjs",                    
-      "lib": ["es6", "esnext"],                     
-      "allowJs": true,
-      "outDir": "build",                          
-      "rootDir": "sr",
-      "strict": true,         
+  "compilerOptions": {
+      "module": "commonjs",
       "noImplicitAny": false,
+      "suppressImplicitAnyIndexErrors": true,
+      "target": "ES6",
+      "allowSyntheticDefaultImports": true,
       "esModuleInterop": true,
-      "resolveJsonModule": true,
-      "skipLibCheck": true
-    }
-  }
+      "strict": true,
+      "moduleResolution": "node",
+      "removeComments": true,
+      "sourceMap": true,
+      "noLib": false,
+      "declaration": true,
+      "lib": ["dom", "es6", "es5", "dom.iterable", "scripthost"],
+      "outDir": "dist",
+      "typeRoots": [
+          "node_modules/@types"
+      ]
+  },
+  "exclude": [
+      "dist",
+      "node_modules"
+  ]
+}

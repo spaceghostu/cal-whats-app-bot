@@ -12,7 +12,7 @@
         "clean": "rm -Rf node_modules/ *.js",
         "build": "tsc",
         "test": "npm run build && node dist/client.js",
-        "watch": "nodemon --watch 'main.ts' --exec 'ts-node' main.ts"
+        "watch": "nodemon --watch 'src/main.ts' --exec 'ts-node' src/main.ts"
     },
     "author": "OpenAPI-Generator Contributors",
     "license": "Unlicense",
