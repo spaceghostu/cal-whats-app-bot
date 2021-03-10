@@ -8,8 +8,17 @@ import wiki from 'wikijs';
 import localtunnel from 'localtunnel';
 import moment from 'moment';
 import gis from 'g-i-s';
-import path from 'path';
-import fs from 'fs';
+import giveMeAJoke from 'give-me-a-joke';
+import oneLinerJoke from 'one-liner-joke';
+import knockknock from 'knock-knock-jokes';
+import yoMamma from 'yo-mamma';
+import * as catFacts from 'get-cat-facts';
+import * as facts from 'facts-generator';
+import { getRandomFacts } from 'freefacts';
+import fq from "facts-quiz";
+import { getRandomFact } from "facts-quiz";
+import imdbTrivia from "imdb-trivia";
+import isPrime from "is-prime-value";
 
 const app = express();
 app.use(bodyParser.json());
@@ -25,7 +34,10 @@ process.on('unhandledRejection', err => {
 
 let tunnel = '';
 (async () => {
-  const _tunnel = await localtunnel({ port: 3000 });
+  const _tunnel = await localtunnel({
+    port: 3000,
+    subdomain: 'calcalchat'
+  });
 
   tunnel = _tunnel.url;
 
@@ -51,6 +63,32 @@ app.post('/', function (req, res) {
   console.log(data);
 
 
+  if (data && data.body && data.body.match(/^Command list/g)) {
+    console.log('command list');
+    const commands = `
+      - Tell me about <query>
+      - Tell me all about <query>
+      - Picture of <query>
+      - Joke types
+      - Give me a dad joke
+      - Give me a chuck norris joke
+      - Give me a random joke
+      - Give me a knock knock joke
+      - Give me a yo mama joke
+      - Fact types
+      - Give me a cat fact
+      - Give me a fact fact
+      - Give me a random fact
+      - Give me a random random fact
+      - Give me imdb trivia
+      - Is prime <query>
+      - Draw a card
+    `;
+    axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+      body: commands,
+      chatId: data.chatId
+    });
+  }
 
   if (data && data.body && data.body.match(/^Tell me about /g)) {
     const about = data.body.replace(/^Tell me about /g, '');
@@ -61,6 +99,32 @@ app.post('/', function (req, res) {
       .then(summary => {
         axios.post(`${apiUrl}/sendMessage?token=${token}`, {
           body: summary,
+          chatId: data.chatId
+        });
+      })
+      .catch(error => {
+        axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+          body: 'No Article Found',
+          chatId: data.chatId
+        });
+      });
+  }
+
+  if (data && data.body && data.body.match(/^Tell me all about /g)) {
+    const about = data.body.replace(/^Tell me all about /g, '');
+    console.log(about);
+    wiki()
+      .page(about)
+      .then(page => page.fullInfo())
+      .then(summary => {
+        axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+          body: summary,
+          chatId: data.chatId
+        });
+      })
+      .catch(error => {
+        axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+          body: 'No Article Found',
           chatId: data.chatId
         });
       });
@@ -81,7 +145,7 @@ app.post('/', function (req, res) {
       const _body = res[Math.floor(Math.random() * 100)].url;
       console.log('Req body: ', _body);
       const newUrl = _body.match(/^(.+?\.(png|jpe?g))/i)[0];
-      console.log('newUrl', newUrl)
+      console.log('newUrl', newUrl);
       axios.post(`${apiUrl}/sendFile?token=${token}`, {
         filename: newUrl,
         body: newUrl,
@@ -92,29 +156,189 @@ app.post('/', function (req, res) {
           'Content-type': 'application/json'
         }
       });
-
-
     });
+  }
+
+
+  if (data && data.body && data.body.match(/^Joke types/g)) {
+    console.log('joke types');
+    const jokeList = `
+      Dad Jokes
+      Chuck Norris Joke
+      Random Joke
+      Knock Knock
+      Yo Mama
+    `;
+    axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+      body: jokeList,
+      chatId: data.chatId
+    });
+  }
+
+
+  if (data && data.body && data.body.match(/^Give me a dad joke/g)) {
+    console.log('dad joke');
+    giveMeAJoke.getRandomDadJoke(function (joke: string) {
+      axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+        body: joke,
+        chatId: data.chatId
+      });
+    });
+  }
+
+  if (data && data.body && data.body.match(/^Give me a chuck norris joke/g)) {
+    console.log('chuck joke');
+    giveMeAJoke.getRandomCNJoke(function (joke: string) {
+      axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+        body: joke,
+        chatId: data.chatId
+      });
+    });
+  }
+
+  if (data && data.body && data.body.match(/^Give me a random joke/g)) {
+    console.log('random joke');
+    var getRandomJoke = oneLinerJoke.getRandomJoke();
+    axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+      body: getRandomJoke,
+      chatId: data.chatId
+    });
+  }
+
+  if (data && data.body && data.body.match(/^Give me a knock knock joke/g)) {
+    console.log('knock knock joke');
+    axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+      body: knockknock(),
+      chatId: data.chatId
+    });
+  }
+
+  if (data && data.body && data.body.match(/^Give me a yo mama joke/g)) {
+    console.log('yo mama joke');
+    axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+      body: yoMamma(),
+      chatId: data.chatId
+    });
+  }
+  // ======================= FACTS ===========================
+
+  if (data && data.body && data.body.match(/^Fact types/g)) {
+    console.log('joke types');
+    const jokeList = `
+      Real facts
+    `;
+    axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+      body: jokeList,
+      chatId: data.chatId
+    });
+  }
+
+
+  if (data && data.body && data.body.match(/^Give me a cat fact/g)) {
+    console.log('cat facts');
+    (async () => {
+      const results = await catFacts.random();
+      axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+        body: results,
+        chatId: data.chatId
+      });
+    })();
+  }
+
+
+  if (data && data.body && data.body.match(/^Give me a fact fact/g)) {
+    console.log('fact facts');
+    const fetchFact = facts.getRandomFact();
+    axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+      body: fetchFact,
+      chatId: data.chatId
+    });
+  }
+
+  if (data && data.body && data.body.match(/^Give me a random fact/g)) {
+    console.log('get random facts');
+    getRandomFacts()
+      .then((fact) => {
+        axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+          body: fact,
+          chatId: data.chatId
+        });
+      })
+      .catch((err) => {
+        axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+          body: 'no fact, only error',
+          chatId: data.chatId
+        });
+      });
+  }
+
+  // if (data && data.body && data.body.match(/^Give me a random random fact/g)) {
+  //   console.log('get random random facts');
+  //   const fact = getRandomFact();
+  //   axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+  //     body: fact,
+  //     chatId: data.chatId
+  //   });
+  // }
+  // =====================TRIVIA===============
+
+
+  if (data && data.body && data.body.match(/^Give me imdb trivia/g)) {
+    console.log('imdb trivia');
+
+    imdbTrivia('tt0137523', function (err, movie) {
+      console.log('imdb trivia inner');
+      axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+        body: movie,
+        chatId: data.chatId
+      });
+    });
+  }
+
+
+  if (data && data.body && data.body.match(/^Is prime /g)) {
+    console.log('is prime');
+    const about = Number(data.body.replace(/^Is prime /g, ''));
+    console.log(about);
+
+    if (typeof about === 'number') {
+      axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+        body: isPrime(about),
+        chatId: data.chatId
+      });
+    } else {
+      axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+        body: 'Please give me a number',
+        chatId: data.chatId
+      });
+    }
+
+  }
+
+  if (data && data.body && data.body.match(/time/g)) {
+    console.log('time');
+      axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+        body: moment().format('dddd MMMM Do YYYY, h:mm:ss a'),
+        chatId: data.chatId
+      });
+  }
+
+  if (data && data.body && data.body.match(/^Draw a card/g)) {
+    console.log('draw card');
+    let number = String(Math.floor(Math.random() * 13));
+    number.replace('13', 'K');
+    number.replace('12', 'Q');
+    number.replace('11', 'J');
+    number.replace('1', 'A');
+    const name = data.senderName;
+    const suitID = Math.floor(Math.random() * 4)
+    const suites = ['Hearts', 'Diamonds', 'Spades', 'Clubs'];
+    const card = number + ' of ' + suites[suitID];
+    axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+      body: name + ' drew ' +card,
+      chatId: data.chatId
+    });
+    
   }
   res.end();
 });
-
-async function downloadImage(url) {
-  console.log('Getting image');
-  const newUrl = url.match(/^(.+?\.(png|jpe?g))/i);
-  console.log('--------newUrl', newUrl)
-  const _url = newUrl;
-  const _path = path.resolve(__dirname, 'images', 'code.jpg');
-  const _writer = fs.createWriteStream(_path);
-
-  const response = await axios.get(_url, {
-    responseType: 'stream'
-  });
-
-  response.data.pipe(_writer);
-
-  return new Promise((resolve, reject) => {
-    _writer.on('finish', resolve);
-    _writer.on('error', reject);
-  });
-}
