@@ -323,9 +323,17 @@ app.post('/', function (req, res) {
       });
   }
 
+  if (data && data.body && data.body.match(/^Jack Friday/g)) {
+    console.log('time');
+      axios.post(`${apiUrl}/sendMessage?token=${token}`, {
+        body: 'CHICKEN STRIPS!!!!',
+        chatId: data.chatId
+      });
+  }
+
   if (data && data.body && data.body.match(/^Draw a card/g)) {
     console.log('draw card');
-    let number = String(Math.floor(Math.random() * 13));
+    let number = String(Math.floor(Math.random() * 15));
     number.replace('13', 'K');
     number.replace('12', 'Q');
     number.replace('11', 'J');
@@ -335,7 +343,7 @@ app.post('/', function (req, res) {
     const suites = ['Hearts', 'Diamonds', 'Spades', 'Clubs'];
     const card = number + ' of ' + suites[suitID];
     axios.post(`${apiUrl}/sendMessage?token=${token}`, {
-      body: name + ' drew ' +card,
+      body: name + ' drew ' + card,
       chatId: data.chatId
     });
     

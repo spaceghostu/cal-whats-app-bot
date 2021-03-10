@@ -5,6 +5,9 @@
     "repository": "GIT_USER_ID/GIT_REPO_ID",
     "main": "dist/api.js",
     "types": "dist/api.d.ts",
+    "engines": {
+      "node": "14.x"
+    },
     "scripts": {
         "clean": "rm -Rf node_modules/ *.js",
         "build": "tsc",
