@@ -1,0 +1,41 @@
+{
+    "name": "calvin-whatsapp-api",
+    "version": "1.0.0",
+    "description": "NodeJS client for calvin-whatsapp-api",
+    "repository": "GIT_USER_ID/GIT_REPO_ID",
+    "main": "dist/api.js",
+    "types": "dist/api.d.ts",
+    "scripts": {
+        "clean": "rm -Rf node_modules/ *.js",
+        "build": "tsc",
+        "test": "npm run build && node dist/client.js"
+    },
+    "author": "OpenAPI-Generator Contributors",
+    "license": "Unlicense",
+    "dependencies": {
+        "@types/bluebird": "*",
+        "@types/request": "*",
+        "axios": "^0.21.1",
+        "bluebird": "^3.5.0",
+        "body-parser": "^1.19.0",
+        "express": "^4.17.1",
+        "g-i-s": "^2.1.6",
+        "http": "0.0.1-security",
+        "localtunnel": "^2.0.1",
+        "moment": "^2.29.1",
+        "ngrok": "^3.4.0",
+        "node-fetch": "^2.6.1",
+        "node-http": "0.0.5",
+        "path": "^0.12.7",
+        "random-image-unsplash": "^1.0.6",
+        "random-img": "^1.0.0",
+        "reddit-random-image": "^1.0.2",
+        "request": "^2.88.2",
+        "rewire": "^3.0.2",
+        "wikijs": "^6.0.1"
+    },
+    "devDependencies": {
+        "@types/node": "^8.10.34",
+        "typescript": "^2.4.2"
+    }
+}
