@@ -1,22 +1,13 @@
-// This is the entrypoint for the package
-export * from './api/apis';
-export * from './model/models';
 import axios from 'axios';
 import express from 'express';
 import bodyParser from 'body-parser';
 import wiki from 'wikijs';
 import localtunnel from 'localtunnel';
-import moment from 'moment';
 import gis from 'g-i-s';
-import path from 'path';
-import fs from 'fs';
+import { apiUrl, token } from './config'
 
 const app = express();
 app.use(bodyParser.json());
-
-const apiUrl = 'https://api.chat-api.com/instance237471';
-const token = '1zr7u3x08vfu82x6';
-
 
 process.on('unhandledRejection', err => {
   console.log(err);
@@ -46,7 +37,6 @@ let tunnel = '';
 
 
 app.post('/', function (req, res) {
-  console.log(req.body);
   const data = req.body.messages[0];
   console.log(data);
 
@@ -76,7 +66,7 @@ app.post('/', function (req, res) {
     const about = data.body.replace(/^Picture of /g, '');
     console.log(about);
 
-    gis(about, (err, res) => {
+    gis(about, (err: any, res: any) => {
       console.log(res[0]);
       const _body = res[Math.floor(Math.random() * 100)].url;
       console.log('Req body: ', _body);
@@ -98,23 +88,3 @@ app.post('/', function (req, res) {
   }
   res.end();
 });
-
-async function downloadImage(url) {
-  console.log('Getting image');
-  const newUrl = url.match(/^(.+?\.(png|jpe?g))/i);
-  console.log('--------newUrl', newUrl)
-  const _url = newUrl;
-  const _path = path.resolve(__dirname, 'images', 'code.jpg');
-  const _writer = fs.createWriteStream(_path);
-
-  const response = await axios.get(_url, {
-    responseType: 'stream'
-  });
-
-  response.data.pipe(_writer);
-
-  return new Promise((resolve, reject) => {
-    _writer.on('finish', resolve);
-    _writer.on('error', reject);
-  });
-}
