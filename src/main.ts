@@ -15,8 +15,6 @@ import yoMamma from 'yo-mamma';
 import * as catFacts from 'get-cat-facts';
 import * as facts from 'facts-generator';
 import { getRandomFacts } from 'freefacts';
-import fq from "facts-quiz";
-import { getRandomFact } from "facts-quiz";
 import imdbTrivia from "imdb-trivia";
 import isPrime from "is-prime-value";
 
@@ -326,7 +324,7 @@ app.post('/', function (req, res) {
   if (data && data.body && data.body.match(/^Jack Friday/g)) {
     console.log('time');
       axios.post(`${apiUrl}/sendMessage?token=${token}`, {
-        body: 'CHICKEN STRIPS!!!!',
+        body: 'CHICKEN',
         chatId: data.chatId
       });
   }
